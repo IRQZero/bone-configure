@@ -1,0 +1,105 @@
+
+#!/bin/bash
+
+
+
+## create a link to the cloud9 dir in the home dir cakked bone, for ease of access
+cd ~/
+ln -s /var/lib/cloud9/ bone
+mkdir
+mkdir downloads
+
+
+echo "DDC_Node" > /etc/hostname
+echo "auto eth0" >> /etc/network/interfaces
+echo "iface eth0 inet dhcp" >> /etc/network/interfaces
+ntpdate -b -s -u pool.ntp.org
+
+## get the package manager working as well as we can
+apt-get update
+apt-get install
+apt-get install autoconf automake libtool libusb-1.0-0-dev
+apt-get install minicom
+
+
+# get the overlays for UARTO1 at ttyO1 or something..
+cd ~/downloads
+wget http://s3.armhf.com/boards/bbb/dt/ttyO1_armhf.com-00A0.dtbo
+cp ttyO1_armhf.com-00A0.dtbo /lib/firmware
+
+
+## install of nfc lib dependencies
+## Install the Libusb Compatibility Library
+## Download libusb-compat-0.1.5.tar.bz2 from libusb, uncompress it, and install it like so:
+cd ~/downloads
+sudo apt-get install libusb-dev libpcsclite-dev
+wget http://sourceforge.net/projects/libusb/files/libusb-compat-0.1/libusb-compat-0.1.5/libusb-compat-0.1.5.tar.bz2
+tar xjf libusb-compat-0.1.5.tar.bz2
+cd libusb-compat-0.1.5
+./configure
+make
+make install
+
+## install the nfc libs
+cd ~/downloads
+sudo apt-get install libusb-0.1-4 libpcsclite1 libccid pcscd
+git clone git://anonscm.debian.org/collab-maint/libnfc.git
+cd libnfc
+autoreconf -vis
+./configure
+make
+sudo make install
+mkdir /usr/local/etc/nfc/
+touch /usr/local/etc/nfc/libnfc.conf
+echo 'device.name = "elechouse_pn532_uart"' >> /usr/local/etc/nfc/libnfc.conf
+echo 'device.connstring = "pn532_uart:/dev/ttyO1"' >> /usr/local/etc/nfc/libnfc.conf
+## copy the PN53x rules file from the libnfc distribution as follows:
+sudo cp contrib/udev/42-pn53x.rules /lib/udev/rules.d/
+sudo echo ttyO1_armhf.com > /sys/devices/bone_capemgr.9/slots
+
+## Installing libfreefare
+## Now that you have libnfc installed, download and install libfreefare:
+cd ~/downloads
+git clone https://code.google.com/p/libfreefare/
+cd libfreefare
+autoreconf -vis
+./configure
+make
+make install
+
+## update linker to be able to find libs
+sudo ldconfig
+
+
+## create new file:
+sudo touch /etc/modprobe.d/blacklist-libnfc.conf
+## And add to the file:
+sudo echo "blacklist pn533" >> /etc/modprobe.d/blacklist-libnfc.conf
+sudo echo "blacklist nfc" >> /etc/modprobe.d/blacklist-libnfc.conf
+
+
+## install redis
+# apt-get install redis-server
+
+## install some bonjour stuff
+# apt-get install libavahi-compat-libdnssd-dev
+
+## clone our custom git repo and install stuff
+cd ~/bone/javascripts
+git clone git@github.com:misterinterrupt/mixpanel-ddc
+cd mixpanel-ddc/nfc-node
+npm install
+npm start
+
+
+
+## useful utilities
+#netstat -an | grep 8080
+
+# resizing an sd filesystem to use all the space
+# http://thethingsystem.com/dev/Bootstrapping-the-BeagleBone-Black-with-Debian.html
+
+# NOTE: The booted device is always device 0, i.e. mmcblk0. The internal eMMC always has the mmcblkXboot0 and mmcblkXboot1 entries. 
+# If the device is booted from eMMC the entries will be mmcblk0boot0 and mmcblk0boot1. 
+# If the device is NOT booted from eMMC the entries will be mmcblk1boot0 and mmcblk1boot1.
+
