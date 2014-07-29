@@ -47,17 +47,17 @@ autoreconf -vis
 ./configure
 make
 make install
+## copy the PN53x rules file from the libnfc distribution as follows:
+cp -v contrib/udev/42-pn53x.rules /lib/udev/rules.d/
+
+## update linker to be able to find libs
+ldconfig
 
 cd /var/lib/cloud9/
 mkdir /usr/local/etc/nfc/
 git clone git@github.com:misterinterrupt/bone-configure.git
 cp -v bone-config/configs/remote_node/libnfc.conf /usr/local/etc/nfc/libnfc.conf
 
-## copy the PN53x rules file from the libnfc distribution as follows:
-cp -v contrib/udev/42-pn53x.rules /lib/udev/rules.d/
-
-## update linker to be able to find libs
-ldconfig
 
 ## Installing libfreefare
 ## Now that you have libnfc installed, download and install libfreefare:
