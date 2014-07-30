@@ -66,6 +66,9 @@ else
   apt-get install libusb-dev
   RETURN_CODE=$?; check_errors "installing libusb-dev"
   
+  apt-get install libusb-1.0-0-dev
+  RETURN_CODE=$?; check_errors "installing libusb-1.0-0-dev"
+  
   ## install libusb-compat
   wget http://sourceforge.net/projects/libusb/files/libusb-compat-0.1/libusb-compat-0.1.5/libusb-compat-0.1.5.tar.bz2
   RETURN_CODE=$?; check_errors "wget libusb-compat from sourceforge.net"
