@@ -90,6 +90,9 @@ else
   
   rm -rf libusb-compat-0.1.5
   RETURN_CODE=$?; check_errors "removing libusb-compat-0.1.5 directory"
+
+  rm libusb-compat-0.1.5.tar.bz2
+  RETURN_CODE=$?; check_errors "removing libusb-compat-0.1.5.tar.bz2"
   
   ## install the nfc libs
   apt-get -y install libusb-0.1-4
@@ -126,6 +129,9 @@ else
   ## todo delete libnfc directory
   
   ## configuring libnfc
+  mkdir -p /usr/local/etc/nfc
+  RETURN_CODE=$?; check_errors "creating /usr/local/etc/nfc directory"
+
   printf "device.name = \"elechouse_pn532_uart\"\ndevice.connstring = \"pn532_uart:/dev/ttyO1\"\n" > /usr/local/etc/nfc/libnfc.conf
   RETURN_CODE=$?; check_errors "configuring libnfc"
   
@@ -158,10 +164,10 @@ else
   cd ~/
   RETURN_CODE=$?; check_errors "changing to root home directory"
   
-  git clone git@github.com:Yona-Appletree/LEDscape.git
+  git clone https://github.com/Yona-Appletree/LEDscape.git
   RETURN_CODE=$?; check_errors "git clone LEDscape"
   
-  cd LEDScape
+  cd LEDscape
   RETURN_CODE=$?; check_errors "changing to LEDscape directory"
   
   make
