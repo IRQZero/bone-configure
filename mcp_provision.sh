@@ -2,6 +2,9 @@
 #!/bin/
 export DEBIAN_FRONTEND=noninteractive
 
+## will we need to add and use a new user to run our ddc-mcp-serv.d ?
+#useradd -mrU -s /bin/bash ddc-mcp-serv
+
 cd ~/
 ln -s /var/lib/cloud9/ bone
 mkdir

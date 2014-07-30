@@ -11,7 +11,6 @@ mkdir downloads
 echo "DDC_Node" > /etc/hostname
 echo "auto eth0" >> /etc/network/interfaces
 echo "iface eth0 inet dhcp" >> /etc/network/interfaces
-ntpdate -b -s -u pool.ntp.org
 
 ## get the package manager working as well as we can
 apt-get -y update
@@ -72,8 +71,23 @@ make install
 ## update linker to be able to find libs
 ldconfig
 
+## update the time
+ntpdate -b -s -u pool.ntp.org
+
 ## copy modprobe blacklist file for libnfc
 cp bone-config/configs/remote_node/blacklist-libnfc.conf /etc/modprobe.d/blacklist-libnfc.conf
+
+## get LEDScape on the box!
+cd /root
+git clone git@github.com:Yona-Appletree/LEDscape.git
+cd LEDScape
+make
+cp /boot/am335x-boneblack.dtb{,.preledscape_bk}
+cp am335x-boneblack.dtb /boot/
+modprobe uio_pruss
+systemctl enable ledscape.service
+
+
 
 ## clone our custom git repo and install stuff
 ## !!! depends on the ssh credentials, of course
@@ -81,6 +95,8 @@ cd ~/bone/javascripts
 git clone git@github.com:misterinterrupt/mixpanel-ddc
 cd mixpanel-ddc/nfc-node
 npm install
-npm start
+
+## we need to reboot now
+
 
 
