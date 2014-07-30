@@ -25,7 +25,7 @@ RETURN_CODE=$?; check_errors "setting hostname"
 
 if [ `grep "^auto eth0" /etc/network/interfaces | wc -l` -eq 0 ]; then
 
-  printf "auto eth0\n\iface eth0 inet static\n  address 10.10.200.`expr 150 + $NODE_ID`\n  netmask 255.255.255.0\n  network 10.10.200.0\n  gateway 10.10.200.1\n" >> /etc/network/interfaces
+  printf "auto eth0\niface eth0 inet static\n  address 10.10.200.`expr 150 + $NODE_ID`\n  netmask 255.255.255.0\n  network 10.10.200.0\n  gateway 10.10.200.1\n" >> /etc/network/interfaces
   RETURN_CODE=$?; check_errors "configuring network (eth0)"
 
   shutdown -r now
@@ -192,7 +192,7 @@ else
 fi
 
 if [ -f ~/READY ]; then
-
+  echo "It appears this machine is ready to go."
 else
   
   ## finalize installation
