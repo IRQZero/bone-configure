@@ -121,7 +121,7 @@ else
   RETURN_CODE=$?; check_errors "copying pn53x rules"
   
   ldconfig
-  RETURN_CODE=$?; check_errors "updating libraries (ldconfig)"
+  RETURN_CODE=$?; check_errors "ldconfig libnfc"
   
   cd ~/downloads
   RETURN_CODE=$?; check_errors "returning to downloads directory"
@@ -136,7 +136,7 @@ else
   RETURN_CODE=$?; check_errors "configuring libnfc"
   
   ## create modprobe blacklist file for libnfc
-  printf "\"blacklist pn533\"\n\"blacklist nfc\"\n" > /etc/modprobe.d/blacklist-libnfc.conf
+  printf "blacklist pn533\nblacklist nfc\n" > /etc/modprobe.d/blacklist-libnfc.conf
   RETURN_CODE=$?; check_errors "configuring modprobe blacklist for libnfc"
   
   ## install libfreefare
@@ -154,6 +154,9 @@ else
   
   make && make install
   RETURN_CODE=$?; check_errors "make install libfreefare"
+
+  ldconfig
+  RETURN_CODE=$?; check_errors "ldconfig libfreefare"
   
   cd ~/downloads
   RETURN_CODE=$?; check_errors "returning to downloads directory"
@@ -197,24 +200,49 @@ else
   RETURN_CODE=$?; check_errors "changing to root home directory"
   
   ## enable uio_pruss
+  modprobe uio_pruss
+  RETURN_CODE=$?; check_errors "modprobe uio_pruss"
   
   ## enable ledscape.service -- change launch to -1 NOP -c 113 -s 24
   
   ## setup ssh
   mkdir -p .ssh
+  RETURN_CODE=$?; check_errors "creating .ssh directory"
+
   chmod 700 .ssh
+  RETURN_CODE=$?; check_errors "chmod 700 .ssh directory"
+
   cd .ssh
-  printf "-----BEGIN RSA PRIVATE KEY-----\nMIIEpAIBAAKCAQEAuFc0U2K3Ro9x8yIhFLZwn36qPTaOE+Le+eDiRiwnBBKdixJj\niDvBiTISYIowOGIymNHPyH0BewCU7XByzvJzhzNGPvGeHT3c+BK9Wyl3cC+G6l9X\ni4Fy78bAn3bO2T1yezGUne9qbyVWDyzlJDjEV122jFgGyR2khT561W+XbLFE9fN\nCcTquOsIrt6Iym27jn3uovyRe2mAazpxXLQQTErBdFHE8pE4GU5CpHzJjlZAw6w2\n3flnoMdxD2VAwFJyei4WbwMtwE4hQo+siLAKJt7rQPhaTWweM6W/mQJZMf+rXFsO\nta/P+WeI5hZiOeqn+/17E62wNMHQZ2/IJcn/QwIDAQABAoIBAGWwrYvmZAZHsWuX\ngzpC3mQN4um7w6rSt4CO/yQIzUkg38nNThzkIgKGHb8l3C3udcz5yS7nTr7E9mL5\nakwhUXve3Dxy2290Jgavh8fXWy0G+t0l1Ux/D6GYOcB+MO2IF1LaDBmINpeBEb3I\nVqR5PNnifmMlY8f1WHeDnM6m0UosGImW58c0MYwKA6M+tOOmQCug2Yy18XUciwNb\ntGFbV3A0pqQbaToCtayu1eLBGJ8BVrthyjWybxayfZZCO853Pa2X6LePBdemhwNi\nov12Qp01ws6zXnHPAJhWi4qeR3HqB02CdT6pBGe7lrsScKWS1Vnr+aU1oddKoMc5\nad/egaECgYEA7Z9OURPCv2fOZNb7UcjLlbiRTdl96EjAJn/6cF9MYeKiHCCWdHdK\ntvVT6hs2EiEWZGERdv9zsifrePkItgMLmZS8KYzjxN5s1+Gs01I+nnCgtD/XtTz8\n2BMiXmn4EgOTCzKBulZsaeTe9c+WxfBlJlo98hsvJillMT/WWy84pdMCgYEAxpj5\nCwSaRz4jSpejmRqxLpwhAU3xEyaYcN6FNV/yR4zNHTetJJVVgRhjxzVWhphole5Y\nO7oXzlGG9Z/7eZO9OgcaoNux6cCIbBjo+l2DqwF55o+PmKDw3isOS73EMmA+NUHu\n5JyRoR3NdmXjvsHqqMNlFc+QZa8UI9GOeHmSKtECgYEA17RZf7gUfXRaI6gUFDXW\nuV8GaEkaxpXj+A8M5J1d1S3KQwZCDg+MP3GMb2OsPeDTVuPW2tMhz4P1ead3hOJW\n0V/3PzCqQrg2zfIK1Po/5cwP1hBuXBO04uDbviEsFA4ymWOL5/80AxzEWRfMonqL\nF7mrqe+LaXUCayasC7JeFgkCgYB4dTrBgxYs1jTDvrxdVkJYGh0u1F7AFe3qsB2u\nJTcoTO/wo9+iS+3j8q46m1CTLQhqwHnGKHbeDrdEbrgyovjopHxzSy5bsQtOPcG6\nclQ1uhx9S2B23E+dAhKWwFCrmZLB7O8AvTLbvd7szJpaDvbNTE8Y7qAP/STDIQ1A\nZ8TPsQKBgQDp2hfkaNBu8n3rZnEO3Mwt0DCf5AKZ1EmLPjxS+j21Z15qiJag2r/2\nO2DeXwyP5F9ZDcnu7pzFiRTwJiXBb1sXapHVTxhbjN3rfaZ9nDuk763GiRMBwZBQ\n9iLRk+RaPAnAV2NqpQcyYR4DRt9De5o74+st0BHJspttvDHN2b8zxA==\n-----END RSA PRIVATE KEY-----\n" > irq_rsa
+  RETURN_CODE=$?; check_errors "changing to .ssh directory"
+
+  printf -- "-----BEGIN RSA PRIVATE KEY-----\nMIIEpAIBAAKCAQEAuFc0U2K3Ro9x8yIhFLZwn36qPTaOE+Le+eDiRiwnBBKdixJj\niDvBiTISYIowOGIymNHPyH0BewCU7XByzvJzhzNGPvGeHT3c+BK9Wyl3cC+G6l9X\ni4Fy78bAn3bO62T1yezGUne9qbyVWDyzlJDjEV122jFgGyR2khT561W+XbLFE9fN\nCcTquOsIrt6Iym27jn3uovyRe2mAazpxXLQQTErBdFHE8pE4GU5CpHzJjlZAw6w2\n3flnoMdxD2VAwFJyei4WbwMtwE4hQo+siLAKJt7rQPhaTWweM6W/mQJZMf+rXFsO\nta/P+WeI5hZiOeqn+/17E62wNMHQZ2/IJcn/QwIDAQABAoIBAGWwrYvmZAZHsWuX\ngzpC3mQN4um7w6rSt4CO/yQIzUkg38nNThzkIgKGHb8l3C3udcz5yS7nTr7E9mL5\nakwhUXve3Dxy2290Jgavh8fXWy0G+t0l1Ux/D6GYOcB+MO2IF1LaDBmINpeBEb3I\nVqR5PNnifmMlY8f1WHeDnM6m0UosGImW58c0MYwKA6M+tOOmQCug2Yy18XUciwNb\ntGFbV3A0pqQbaToCtayu1eLBGJ8BVrthyjWybxayfZZCO853Pa2X6LePBdemhwNi\nov12Qp01ws6zXnHPAJhWi4qeR3HqB02CdT6pBGe7lrsScKWS1Vnr+aU1oddKoMc5\nad/egaECgYEA7Z9OURPCv2fOZNb7UcjLlbiRTdl96EjAJn/6cF9MYeKiHCCWdHdK\ntvVT6hs2EiEWZGERdv9zsifrePkItgMLmZS8KYzjxN5s1+Gs01I+nnCgtD/XtTz8\n2BMiXmn4EgOTCzKBulZsaeTe9c+WxfBlJlo98hsvJillMT/WWy84pdMCgYEAxpj5\nCwSaRz4jSpejmRqxLpwhAU3xEyaYcN6FNV/yR4zNHTetJJVVgRhjxzVWhphole5Y\nO7oXzlGG9Z/7eZO9OgcaoNux6cCIbBjo+l2DqwF55o+PmKDw3isOS73EMmA+NUHu\n5JyRoR3NdmXjvsHqqMNlFc+QZa8UI9GOeHmSKtECgYEA17RZf7gUfXRaI6gUFDXW\nuV8GaEkaxpXj+A8M5J1d1S3KQwZCDg+MP3GMb2OsPeDTVuPW2tMhz4P1ead3hOJW\n0V/3PzCqQrg2zfIK1Po/5cwP1hBuXBO04uDbviEsFA4ymWOL5/80AxzEWRfMonqL\nF7mrqe+LaXUCayasC7JeFgkCgYB4dTrBgxYs1jTDvrxdVkJYGh0u1F7AFe3qsB2u\nJTcoTO/wo9+iS+3j8q46m1CTLQhqwHnGKHbeDrdEbrgyovjopHxzSy5bsQtOPcG6\nclQ1uhx9S2B23E+dAhKWwFCrmZLB7O8AvTLbvd7szJpaDvbNTE8Y7qAP/STDIQ1A\nZ8TPsQKBgQDp2hfkaNBu8n3rZnEO3Mwt0DCf5AKZ1EmLPjxS+j21Z15qiJag2r/2\nO2DeXwyP5F9ZDcnu7pzFiRTwJiXBb1sXapHVTxhbjN3rfaZ9nDuk763GiRMBwZBQ\n9iLRk+RaPAnAV2NqpQcyYR4DRt9De5o74+st0BHJspttvDHN2b8zxA==\n-----END RSA PRIVATE KEY-----\n" > irq_rsa
+  RETURN_CODE=$?; check_errors "writing out private ssh key"
+
   chmod 600 irq_rsa
-  printf "sh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC4VzRTYrdGj3HzIiEUtnCffqo9No4T4t754OJGLCcEEp2LEmOIO8GJMhJgijA4YjKY0c/IfQF7AJTtcHLO8nOHM0Y+8Z4dPdz4Er1bKXdwL4bqX1eLgXLvxsCfds7rZPXJ7MZSd72pvJVYPLOUkOMRXXbaMWAbJHaSFPnrVb5dssUT180JxOq46wiu3ojKbbuOfe6i/JF7aYBrOnFctBBMSsF0UcTykTgZTkKkfMmOVkDDrDbd+Wegx3EPZUDAUnJ6LhZvAy3ATiFCj6yIsAom3utA+FpNbB4zpb+ZAlkx/6tcWw61r8/5Z4jmFmI56qf7/XsTrbA0wdBnb8glyf9D\n" > irq_rsa.pub
+  RETURN_CODE=$?; check_errors "chmod 600 private ssh key"
+
+  printf -- "sh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC4VzRTYrdGj3HzIiEUtnCffqo9No4T4t754OJGLCcEEp2LEmOIO8GJMhJgijA4YjKY0c/IfQF7AJTtcHLO8nOHM0Y+8Z4dPdz4Er1bKXdwL4bqX1eLgXLvxsCfds7rZPXJ7MZSd72pvJVYPLOUkOMRXXbaMWAbJHaSFPnrVb5dssUT180JxOq46wiu3ojKbbuOfe6i/JF7aYBrOnFctBBMSsF0UcTykTgZTkKkfMmOVkDDrDbd+Wegx3EPZUDAUnJ6LhZvAy3ATiFCj6yIsAom3utA+FpNbB4zpb+ZAlkx/6tcWw61r8/5Z4jmFmI56qf7/XsTrbA0wdBnb8glyf9D\n" > irq_rsa.pub
+  RETURN_CODE=$?; check_errors "writing out public ssh key"
+
   printf "Host github.com\n  Hostname github.com\n  IdentityFile /root/.ssh/irq_rsa\n  User git" > config
+  RETURN_CODE=$?; check_errors "writing out ssh config file"
 
   cd /srv
   RETURN_CODE=$?; check_errors "changing to /srv directory"
 
   ## clone git repo
+  git clone git@github.com:misterinterrupt/mixpanel-ddc.git
+  RETURN_CODE=$?; check_errors "cloning repository mixpanel-ddc"
+
+  cd mixpanel-ddc
+  RETURN_CODE=$?; check_errors "changing to mixpanel-ddc directory"
   
+  npm install
+  RETURN_CODE=$?; check_errors "running npm install"
+
   echo date > ~/READY
+
+  shutdown -r now
 
 fi
 
