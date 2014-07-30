@@ -1,5 +1,5 @@
 ## keep running if we have an error so we can catch it
-#trap '' ERR
+trap '' ERR
 
 ## make sure that we are root
 
